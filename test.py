@@ -1,1 +1,0 @@
-print("DECO*27-Neverland feat.Hatsune Miku")
