@@ -1,11 +1,15 @@
 from pydantic import BaseModel
 from typing import List, Optional, Literal, Dict, Any
 
+class ImageContent(BaseModel):
+    originalContentUrl: str
+    previewImageUrl: str
 
 class LineMessageContent(BaseModel):
     id: str
     type: str
     text: Optional[str] = None
+    image: Optional[ImageContent] = None
 
 
 class LineSource(BaseModel):
@@ -36,20 +40,34 @@ class LineWebhookRequest(BaseModel):
 class LineMessageEvent(BaseModel):
     reply_token: str
     user_id: str
-    message: str
+    message_type: Literal["text", "image"]
+    content: str
     
     @classmethod
     def from_webhook_event(cls, event: LineEventObject) -> Optional['LineMessageEvent']:
-        """สร้าง LineMessageEvent จาก LineEventObject"""
-        if event.type != "message" or not event.message or event.message.type != "text":
+        
+        print(event)
+        if event.type != "message" or not event.message:
             return None
             
         user_id = event.source.userId
         if not user_id:
             return None
-            
+        
+
+        if event.message.type not in ["text", "image"]:
+            return None
+
+        # print(event.message.type + "อะไรวะ")
+        content = (
+            event.message.text 
+            if event.message.type == "text" 
+            else event.message.id
+        )
+
         return cls(
             reply_token=event.replyToken,
             user_id=user_id,
-            message=event.message.text or ""
+            message_type=event.message.type,
+            content=content
         )
