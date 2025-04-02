@@ -3,7 +3,7 @@ import os
 import uuid
 
 
-class FileStorageAdapter(ImageStorageInterface):
+class ImageStorageAdapter(ImageStorageInterface):
     def __init__(self, storage_path: str = "downloads"):
         self.storage_path = storage_path
         os.makedirs(self.storage_path, exist_ok=True)

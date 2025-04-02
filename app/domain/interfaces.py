@@ -6,6 +6,11 @@ class ImageStorageInterface(ABC):
     def save_image(self, user_id: str, image_content: bytes) -> str:
         pass
 
+class OcrInterface(ABC):
+    @abstractmethod
+    def ocr(self, image_content: bytes) -> str:
+        pass
+
 class LineBotServiceInterface(ABC):
     @abstractmethod
     def handle_message(self, user_id: str, message: str) -> str:

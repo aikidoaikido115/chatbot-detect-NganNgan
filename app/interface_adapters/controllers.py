@@ -3,14 +3,16 @@ from app.application.services import LineBotService
 from app.domain.interfaces import LineBotServiceInterface
 from app.domain.models import LineWebhookRequest, LineMessageEvent
 from app.infrastructure.line_api import LineMessagingAdapter
-from app.infrastructure.file_storage import FileStorageAdapter
+from app.infrastructure.file_storage import ImageStorageAdapter
+from app.infrastructure.ocr_api import OcrAdapter
 
 router = APIRouter()
 
 def get_line_bot_service() -> LineBotServiceInterface:
     messaging_adapter = LineMessagingAdapter()
-    image_storage = FileStorageAdapter()
-    return LineBotService(messaging_adapter, image_storage)
+    image_storage = ImageStorageAdapter()
+    ocr = OcrAdapter()
+    return LineBotService(messaging_adapter, image_storage, ocr)
 
 @router.post("/webhook")
 async def line_webhook(
