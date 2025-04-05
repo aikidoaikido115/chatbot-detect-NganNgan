@@ -14,6 +14,9 @@ def get_line_bot_service() -> LineBotServiceInterface:
     ocr = OcrAdapter()
     return LineBotService(messaging_adapter, image_storage, ocr)
 
+@router.get("/")
+async def hello():
+    return {"message":"Welcome to Chatbot"}
 @router.post("/webhook")
 async def line_webhook(
     webhook: LineWebhookRequest,
