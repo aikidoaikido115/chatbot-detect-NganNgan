@@ -11,6 +11,17 @@ class OcrInterface(ABC):
     def ocr(self, image_content: bytes) -> str:
         pass
 
+class ImageEnhanceInterface(ABC):
+    @abstractmethod
+    def apply_sharpen(self, image_content: bytes) -> bytes:
+        pass
+    def apply_unsharp_mask(self, image_content: bytes, sigma: float, strength: float) -> bytes:
+        pass
+    def apply_laplacian_sharpen(self, image_content: bytes, alpha: float) -> bytes:
+        pass
+    def apply_gaussian_subtract(self, image_content: bytes, ksize: int) -> bytes:
+        pass
+
 class LineBotServiceInterface(ABC):
     @abstractmethod
     def handle_message(self, user_id: str, message: str) -> str:
