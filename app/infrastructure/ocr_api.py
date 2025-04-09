@@ -1,4 +1,4 @@
-from app.domain.interfaces import OcrInterface
+from app.domain.line.interfaces import OcrInterface
 import base64
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage

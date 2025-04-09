@@ -1,4 +1,4 @@
-from app.domain.interfaces import ImageEnhanceInterface
+from app.domain.line.interfaces import ImageEnhanceInterface
 import imghdr
 import cv2
 import numpy as np
@@ -6,10 +6,10 @@ import numpy as np
 
 class ImageEnhanceAdapter(ImageEnhanceInterface):
 
-    def apply_sharpen(self, image_content: bytes) -> bytes:
+    def apply_conv_sharpen(self, image_content: bytes) -> bytes:
 
         file_type = imghdr.what(None, h=image_content)
-        print(f"นี่คือ filetype ของ apply_sharpen {file_type}")
+        print(f"นี่คือ filetype ของ apply_conv_sharpen {file_type}")
 
         if not file_type:
             raise ValueError("Unsupported or corrupted image format")
@@ -25,7 +25,7 @@ class ImageEnhanceAdapter(ImageEnhanceInterface):
         sharpened = cv2.filter2D(img, -1, kernel)
         
         _, buffer = cv2.imencode(f'.{file_type}', sharpened)
-        print("รูปถูก apply_sharpen เรียบร้อยแล้ว")
+        print("รูปถูก apply_conv_sharpen เรียบร้อยแล้ว")
 
         # เช็คว่ารูปถูก enhance จริงไหม
         # if len(sharpened.shape) == 3 and sharpened.shape[2] == 3:
@@ -41,7 +41,7 @@ class ImageEnhanceAdapter(ImageEnhanceInterface):
     def apply_unsharp_mask(self, image_content: bytes, sigma=1.0, strength=0.7) -> bytes:
 
         file_type = imghdr.what(None, h=image_content)
-        print(f"นี่คือ filetype ของ apply_sharpen {file_type}")
+        print(f"นี่คือ filetype ของ apply_unsharp_mask {file_type}")
 
         if not file_type:
             raise ValueError("Unsupported or corrupted image format")
@@ -62,7 +62,7 @@ class ImageEnhanceAdapter(ImageEnhanceInterface):
     def apply_laplacian_sharpen(self, image_content: bytes, alpha=0.3) -> bytes:
 
         file_type = imghdr.what(None, h=image_content)
-        print(f"นี่คือ filetype ของ apply_sharpen {file_type}")
+        print(f"นี่คือ filetype ของ apply_laplacian_sharpen {file_type}")
 
         if not file_type:
             raise ValueError("Unsupported or corrupted image format")
@@ -81,7 +81,7 @@ class ImageEnhanceAdapter(ImageEnhanceInterface):
     def apply_gaussian_subtract(self, image_content: bytes, ksize=5) -> bytes:
 
         file_type = imghdr.what(None, h=image_content)
-        print(f"นี่คือ filetype ของ apply_sharpen {file_type}")
+        print(f"นี่คือ filetype ของ apply_gaussian_subtract {file_type}")
         if not file_type:
             raise ValueError("Unsupported or corrupted image format")
         

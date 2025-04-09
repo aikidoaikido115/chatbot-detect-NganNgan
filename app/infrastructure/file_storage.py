@@ -1,4 +1,4 @@
-from app.domain.interfaces import ImageStorageInterface
+from app.domain.line.interfaces import ImageStorageInterface
 import os
 import uuid
 

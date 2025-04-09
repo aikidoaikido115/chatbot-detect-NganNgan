@@ -1,4 +1,4 @@
-from app.domain.interfaces import LineMessagingInterface
+from app.domain.line.interfaces import LineMessagingInterface
 import requests
 import os
 
@@ -6,6 +6,7 @@ LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
 
 class LineMessagingAdapter(LineMessagingInterface):
     def send_message(self, reply_token: str, message: str):
+        # print("ก่อนส่งข้อความ ธรรมดาๆ")
         url = "https://api.line.me/v2/bot/message/reply"
         headers = {
             "Content-Type": "application/json",
@@ -17,6 +18,22 @@ class LineMessagingAdapter(LineMessagingInterface):
         }
         requests.post(url, json=payload, headers=headers)
 
+    def send_flex(self, reply_token: str, flex_message: dict):
+        # print("ก่อนจะส่ง flex")
+        url = "https://api.line.me/v2/bot/message/reply"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {LINE_ACCESS_TOKEN}"
+        }
+        payload = {
+            "replyToken": reply_token,
+            "messages": [{
+                "type": "flex",
+                "altText": "เทคนิคอะไรดี?",
+                "contents": flex_message
+            }]
+        }
+        requests.post(url, json=payload, headers=headers)
 
     def get_image_content(self, message_id: str) -> bytes:
 
