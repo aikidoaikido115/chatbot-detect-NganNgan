@@ -7,6 +7,9 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
     id = Column(String, primary_key=True, index=True) # ให้ pk เป็น str โดยดึงมาจากบอทไลน์ และไม่ auto-increment
+    
+    commands = relationship("Command", back_populates="user")
+    
     def to_dict(self):
         return {
             "id": self.id,

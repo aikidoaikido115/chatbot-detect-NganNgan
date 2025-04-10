@@ -26,15 +26,15 @@ class UserService:
     def __init__(self, user_repo: UserRepositoryInterface):
         self.user_repo = user_repo
 
-    def create_user(self,id: str) -> Optional[User]:
-        if self.user_repo.find_by_id(id):
+    async def create_user(self,id: str) -> Optional[User]:
+        if await self.user_repo.find_by_id(id):
             return None
         
         new_user = User(id=id)
-        return self.user_repo.save(new_user)
+        return await self.user_repo.save(new_user)
 
-    def get_users(self) -> List[User]:
-        users = self.user_repo.get_all()
+    async def get_users(self) -> List[User]:
+        users = await self.user_repo.get_all()
 
         return [user.to_dict() for user in users]
 
@@ -42,15 +42,15 @@ class CommandService:
     def __init__(self, command_repo: CommandRepositoryInterface):
         self.command_repo = command_repo
 
-    def create_command(self,user_id: str, name: str) -> Optional[Command]:
-        if self.command_repo.find_by_user_id(user_id):
+    async def create_command(self,user_id: str, name: str) -> Optional[Command]:
+        if await self.command_repo.find_by_user_id(user_id):
             return None
         
         new_command = Command(user_id=user_id, name=name)
-        return self.command_repo.save(new_command)
+        return await self.command_repo.save(new_command)
 
-    def get_commands(self) -> List[Command]:
-        commands = self.command_repo.get_all()
+    async def get_commands(self) -> List[Command]:
+        commands = await self.command_repo.get_all()
 
         return [commad.to_dict() for commad in commands]
     
@@ -72,8 +72,9 @@ class LineBotService(LineBotServiceInterface):
         self.option_list = ["conv_sharpen", "unsharp_mask", "laplacian_sharpen", "gaussian_subtract"]
 
     def handle_message(self, user_id: str, message: str) -> object:
-        self.bridge.post_requests_users(user_id) # ยิง requests post สร้าง user แบบถูกกฎของ hexagonal
-        reply_content = f"สวัสดีครับ ส่งข้อความทำไม กรุณาส่งรูปเข้ามาได้เลย\nลองพิมพ์คำว่า 'menu_select' ดูสิ"
+        response = self.bridge.post_requests_users(user_id) # ยิง requests post สร้าง user แบบถูกกฎของ hexagonal
+        print(f"response มาละ {response}")
+        reply_content = f"สวัสดีครับ ส่งข้อความทำไม กรุณาส่งรูปเข้ามาได้เลย\nลองพิมพ์คำว่า 'menu_select' ดูสิ 2"
 
         # Business logic สำหรับ Rich menu
         if message == "menu_select":
@@ -87,7 +88,7 @@ class LineBotService(LineBotServiceInterface):
         return reply_content
     
     def handle_image(self, user_id: str, image_id: str) -> str:
-        self.bridge.post_requests_users(user_id) # สร้าง user
+        # self.bridge.post_requests_users(user_id) # สร้าง user
 
         image_content = self.messaging_adapter.get_image_content(image_id)
         self.image_storage.save_image(user_id, image_content) # เปลี่ยนไปเก็บที่ database ก่อน

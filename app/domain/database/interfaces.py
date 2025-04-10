@@ -7,26 +7,26 @@ from app.domain.database.models import (
 
 class UserRepositoryInterface(ABC):
     @abstractmethod
-    def save(self, user: User) -> User:
+    async def save(self, user: User) -> User:
         pass
     
-    @abstractmethod
-    def find_by_id(self, id: str) -> User:
+    @abstractmethod 
+    async def find_by_id(self, id: str) -> User:
         pass
     @abstractmethod
-    def get_all(self) -> List[User]:
+    async def get_all(self) -> List[User]:
         pass
 
 
 class CommandRepositoryInterface(ABC):
     @abstractmethod
-    def save(self, command: Command) -> Command:
+    async def save(self, command: Command) -> Command:
         pass
 
     @abstractmethod
-    def find_by_user_id(self, user_id: str) -> Command:
+    async def find_by_user_id(self, user_id: str) -> Command:
         pass
 
     @abstractmethod
-    def get_all(self) -> List[Command]:
+    async def get_all(self) -> List[Command]:
         pass

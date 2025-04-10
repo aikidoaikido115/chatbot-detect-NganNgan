@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-
+from typing import Optional
 
 class ConnectLine2DatabaseInterface(ABC):
     @abstractmethod
-    def post_requests_users(self, id:str):
+    def post_requests_users(self, id:str) -> Optional[dict]:
         pass
 
     # @abstractmethod

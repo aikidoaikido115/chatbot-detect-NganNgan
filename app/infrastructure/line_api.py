@@ -1,8 +1,11 @@
 from app.domain.line.interfaces import LineMessagingInterface
 import requests
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
+# print(f"อ่านไหม {LINE_ACCESS_TOKEN}")
 
 class LineMessagingAdapter(LineMessagingInterface):
     def send_message(self, reply_token: str, message: str):

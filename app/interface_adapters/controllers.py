@@ -26,41 +26,41 @@ async def hello():
 
 
 @router.post("/users")
-def create_user(id: str, db=Depends(get_db)):
+async def create_user(id: str, db=Depends(get_db)):
     try:
         repo = UserRepository(db)
         service = UserService(repo)
-        return service.create_user(id)
+        return await service.create_user(id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/users", response_model=List[Dict[str, Any]])
-def get_users(db=Depends(get_db)):
+async def get_users(db=Depends(get_db)):
     try:
         repo = UserRepository(db)
         service = UserService(repo)
-        users = service.get_users()
+        users = await service.get_users()
         return [user.to_dict() for user in users]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/commands")
-def create_command(id: int, user_id: str, db=Depends(get_db)):
+async def create_command(id: int, user_id: str, db=Depends(get_db)):
     try:
         repo = CommandRepository(db)
         service = CommandService(repo)
-        return service.create_command(id, user_id)
+        return await service.create_command(id, user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/commands", response_model=List[Dict[str, Any]])
-def get_commands(db=Depends(get_db)):
+async def get_commands(db=Depends(get_db)):
     try:
         repo = CommandRepository(db)
         service = CommandService(repo)
-        commands = service.get_commands()
-        return [commands.to_dict() for command in commands]
+        commands = await service.get_commands()
+        return [command.to_dict() for command in commands]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
