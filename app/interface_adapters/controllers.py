@@ -86,24 +86,24 @@ async def line_webhook(
             continue
 
         if message_event.message_type == "text":
-            reply_text = bot_service.handle_message(
+            reply_text = await bot_service.handle_message(
                 message_event.user_id, 
                 message_event.content
             )
         elif message_event.message_type == "image":
-            reply_text = bot_service.handle_image(
+            reply_text = await bot_service.handle_image(
                 message_event.user_id,
                 message_event.content
             )
 
         # print(f"tpye ของ reply_text {type(reply_text)}")
         if isinstance(reply_text, str):
-            bot_service.messaging_adapter.send_message(
+            await bot_service.messaging_adapter.send_message(
                 message_event.reply_token,
                 reply_text
             )
         else:
-            bot_service.messaging_adapter.send_flex(
+            await bot_service.messaging_adapter.send_flex(
                 message_event.reply_token,
                 reply_text
             )

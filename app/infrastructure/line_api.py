@@ -1,5 +1,6 @@
 from app.domain.line.interfaces import LineMessagingInterface
-import requests
+# import requests
+import httpx
 import os
 from dotenv import load_dotenv
 
@@ -8,7 +9,7 @@ LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
 # print(f"อ่านไหม {LINE_ACCESS_TOKEN}")
 
 class LineMessagingAdapter(LineMessagingInterface):
-    def send_message(self, reply_token: str, message: str):
+    async def send_message(self, reply_token: str, message: str):
         # print("ก่อนส่งข้อความ ธรรมดาๆ")
         url = "https://api.line.me/v2/bot/message/reply"
         headers = {
@@ -19,9 +20,12 @@ class LineMessagingAdapter(LineMessagingInterface):
             "replyToken": reply_token,
             "messages": [{"type": "text", "text": message}]
         }
-        requests.post(url, json=payload, headers=headers)
+        async with httpx.AsyncClient() as client:
+            # ใช้ POST method และส่ง payload ที่ถูกต้อง
+            await client.post(url, headers=headers,json=payload)
+        # requests.post(url, json=payload, headers=headers)
 
-    def send_flex(self, reply_token: str, flex_message: dict):
+    async def send_flex(self, reply_token: str, flex_message: dict):
         # print("ก่อนจะส่ง flex")
         url = "https://api.line.me/v2/bot/message/reply"
         headers = {
@@ -36,21 +40,31 @@ class LineMessagingAdapter(LineMessagingInterface):
                 "contents": flex_message
             }]
         }
-        requests.post(url, json=payload, headers=headers)
+        async with httpx.AsyncClient() as client:
+            await client.post(url, headers=headers, json=payload)
 
-    def get_image_content(self, message_id: str) -> bytes:
-
-        print(f"จาก line_api {message_id}")
+        # requests.post(url, json=payload, headers=headers)
+    
+    async def get_image_content(self, message_id: str) -> bytes:
         url = f"https://api-data.line.me/v2/bot/message/{message_id}/content"
         headers = {"Authorization": f"Bearer {LINE_ACCESS_TOKEN}"}
         
         try:
-            response = requests.get(url, headers=headers)
-            print(f"Response Status: {response.status_code}")  # Debug status
-            print(f"Response Headers: {response.headers}")      # Debug headers
-            response.raise_for_status()
-
-        except requests.HTTPError as e:
-            print(f"HTTP Error Details: {e.response.text}")  # แสดงข้อความ error จาก LINE
+            async with httpx.AsyncClient() as client:
+                # ใช้ stream=True สำหรับการดาวน์โหลดไฟล์ขนาดใหญ่
+                async with client.stream("GET", url, headers=headers) as response:
+                    response.raise_for_status()
+                    
+                    # เก็บข้อมูลเป็น chunks เพื่อประหยัด memory
+                    chunks = []
+                    async for chunk in response.aiter_bytes():
+                        chunks.append(chunk)
+                        
+                    return b"".join(chunks)
+                    
+        except httpx.HTTPStatusError as e:
+            print(f"Image Download Error ({e.response.status_code}): {e.response.text}")
             raise
-        return response.content
+        except Exception as e:
+            print(f"Unexpected error in get_image_content: {str(e)}")
+            raise

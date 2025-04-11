@@ -28,6 +28,7 @@ class UserService:
 
     async def create_user(self,id: str) -> Optional[User]:
         if await self.user_repo.find_by_id(id):
+            print("Username ซ้ำข้ามขั้นตอนนี้")
             return None
         
         new_user = User(id=id)
@@ -71,8 +72,8 @@ class LineBotService(LineBotServiceInterface):
 
         self.option_list = ["conv_sharpen", "unsharp_mask", "laplacian_sharpen", "gaussian_subtract"]
 
-    def handle_message(self, user_id: str, message: str) -> object:
-        response = self.bridge.post_requests_users(user_id) # ยิง requests post สร้าง user แบบถูกกฎของ hexagonal
+    async def handle_message(self, user_id: str, message: str) -> object:
+        response = await self.bridge.post_requests_users(user_id) # ยิง requests post สร้าง user แบบถูกกฎของ hexagonal
         print(f"response มาละ {response}")
         reply_content = f"สวัสดีครับ ส่งข้อความทำไม กรุณาส่งรูปเข้ามาได้เลย\nลองพิมพ์คำว่า 'menu_select' ดูสิ 2"
 
@@ -87,10 +88,11 @@ class LineBotService(LineBotServiceInterface):
             # save ฟังชันล่าสุดลง database นี่คือวิธีที่จะทำให้จำข้อความที่ user เคยพิมพ์ได้
         return reply_content
     
-    def handle_image(self, user_id: str, image_id: str) -> str:
-        # self.bridge.post_requests_users(user_id) # สร้าง user
+    async def handle_image(self, user_id: str, image_id: str) -> str:
+        response = await self.bridge.post_requests_users(user_id) # สร้าง user
+        print(f"response มาละ {response}")
 
-        image_content = self.messaging_adapter.get_image_content(image_id)
+        image_content = await self.messaging_adapter.get_image_content(image_id)
         self.image_storage.save_image(user_id, image_content) # เปลี่ยนไปเก็บที่ database ก่อน
         # OCR
         # print(image_content)

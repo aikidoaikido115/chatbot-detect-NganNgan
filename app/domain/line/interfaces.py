@@ -39,13 +39,13 @@ class LineBotServiceInterface(ABC):
 
 class LineMessagingInterface(ABC):
     @abstractmethod
-    def send_message(self, reply_token: str, message: str):
+    async def send_message(self, reply_token: str, message: str):
         pass
     
     @abstractmethod
-    def send_flex(self, reply_token: str, flex_message: dict):
+    async def send_flex(self, reply_token: str, flex_message: dict):
         pass
 
     @abstractmethod
-    def get_image_content(self, message_id: str) -> bytes:
+    async def get_image_content(self, message_id: str) -> bytes:
         pass
