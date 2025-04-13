@@ -40,17 +40,26 @@ async def get_users(db=Depends(get_db)):
         repo = UserRepository(db)
         service = UserService(repo)
         users = await service.get_users()
-        return [user.to_dict() for user in users]
+        return [user for user in users]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/commands")
-async def create_command(id: int, user_id: str, db=Depends(get_db)):
+async def create_command(user_id: str, name: str, db=Depends(get_db)):
     try:
         repo = CommandRepository(db)
         service = CommandService(repo)
-        return await service.create_command(id, user_id)
+        return await service.create_command(user_id, name)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get('/command', response_model=Dict[str, Any])
+async def get_command_by_user_id(user_id: str, db=Depends(get_db)):
+    try:
+        repo = CommandRepository(db)
+        service = CommandService(repo)
+        return await service.get_command_by_user_id(user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -60,7 +69,7 @@ async def get_commands(db=Depends(get_db)):
         repo = CommandRepository(db)
         service = CommandService(repo)
         commands = await service.get_commands()
-        return [command.to_dict() for command in commands]
+        return [command for command in commands]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     

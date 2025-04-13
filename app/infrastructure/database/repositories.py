@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete
 from app.domain.database.models import User, Command
 from typing import List
 from app.domain.database.interfaces import UserRepositoryInterface, CommandRepositoryInterface
@@ -41,9 +42,17 @@ class CommandRepository(CommandRepositoryInterface):
             raise e
         
     async def find_by_user_id(self, user_id: str) -> Command:
-        result = await self.db.execute(select(Command).filter(Command.id == user_id))
+        result = await self.db.execute(select(Command).filter(Command.user_id == user_id))
         return result.scalars().first()
     
     async def get_all(self) -> List[Command]:
         result = await self.db.execute(select(Command))
         return result.scalars().all()
+    
+    async def delete_all_user_command(self, user_id: str) -> List[Command]:
+        try:
+            await self.db.execute(delete(Command).where(Command.user_id == user_id))
+            await self.db.commit()
+        except Exception as e:
+            await self.db.rollback()
+            raise e

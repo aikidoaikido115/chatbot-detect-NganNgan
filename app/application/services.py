@@ -38,14 +38,20 @@ class UserService:
         users = await self.user_repo.get_all()
 
         return [user.to_dict() for user in users]
+    
+    async def get_user_by_id(self, id: str) -> Optional[User]:
+        user = await self.user_repo.get_by_id(id)
+        return user
 
 class CommandService:
     def __init__(self, command_repo: CommandRepositoryInterface):
         self.command_repo = command_repo
 
     async def create_command(self,user_id: str, name: str) -> Optional[Command]:
+        print("ก่อนเข้า if")
         if await self.command_repo.find_by_user_id(user_id):
-            return None
+            deleted_all_user_command = await self.command_repo.delete_all_user_command(user_id)
+            print(deleted_all_user_command)
         
         new_command = Command(user_id=user_id, name=name)
         return await self.command_repo.save(new_command)
@@ -53,7 +59,11 @@ class CommandService:
     async def get_commands(self) -> List[Command]:
         commands = await self.command_repo.get_all()
 
-        return [commad.to_dict() for commad in commands]
+        return [command.to_dict() for command in commands]
+    
+    async def get_command_by_user_id(self, user_id: str) -> Command:
+        command = await self.command_repo.find_by_user_id(user_id)
+        return command.to_dict()
     
 class LineBotService(LineBotServiceInterface):
     def __init__(
@@ -73,8 +83,8 @@ class LineBotService(LineBotServiceInterface):
         self.option_list = ["conv_sharpen", "unsharp_mask", "laplacian_sharpen", "gaussian_subtract"]
 
     async def handle_message(self, user_id: str, message: str) -> object:
-        response = await self.bridge.post_requests_users(user_id) # ยิง requests post สร้าง user แบบถูกกฎของ hexagonal
-        print(f"response มาละ {response}")
+        response = await self.bridge.post_requests_users(user_id)
+        print(f"response สมัคร user มาละ {response}")
         reply_content = f"สวัสดีครับ ส่งข้อความทำไม กรุณาส่งรูปเข้ามาได้เลย\nลองพิมพ์คำว่า 'menu_select' ดูสิ 2"
 
         # Business logic สำหรับ Rich menu
@@ -83,20 +93,36 @@ class LineBotService(LineBotServiceInterface):
             print(reply_content)
 
         elif message in self.option_list:
-            # self.bridge.post_requests_command(message) # เซฟชื่อฟังก์ชัน image enhance ที่ user คนนั้นจะใช้
+            response = await self.bridge.post_requests_command(user_id=user_id, name=message)
+            print(f"response สร้าง command มาแล้ว {response}")
             reply_content = f"ใช้ {message} แล้ว กรุณาส่งรูปเข้ามาได้เลยครับ"
-            # save ฟังชันล่าสุดลง database นี่คือวิธีที่จะทำให้จำข้อความที่ user เคยพิมพ์ได้
         return reply_content
     
     async def handle_image(self, user_id: str, image_id: str) -> str:
-        response = await self.bridge.post_requests_users(user_id) # สร้าง user
+        response = await self.bridge.post_requests_users(user_id)
         print(f"response มาละ {response}")
 
         image_content = await self.messaging_adapter.get_image_content(image_id)
-        self.image_storage.save_image(user_id, image_content) # เปลี่ยนไปเก็บที่ database ก่อน
+        # self.image_storage.save_image(user_id, image_content)
         # OCR
         # print(image_content)
-        image_content = self.enhance.apply_conv_sharpen(image_content) # ต้องแก้โดยเอาฟังชันที่ user เลือกโดยอ้างอิงจาก database ที่ตั้งค่าเอาไว้ที่ handle_message
+        enhance_method_obj = await self.bridge.get_requests_command_by_user_id(user_id)
+
+        print(f"ได้มาจาก database {enhance_method_obj}")
+        if enhance_method_obj["name"] == self.option_list[0]:
+            image_content = self.enhance.apply_conv_sharpen(image_content)
+
+        elif enhance_method_obj["name"] == self.option_list[1]:
+            print("มา unsharp")
+            image_content = self.enhance.apply_unsharp_mask(image_content)
+        
+        elif enhance_method_obj["name"] == self.option_list[2]:
+            print("มา lapla")
+            image_content = self.enhance.apply_laplacian_sharpen(image_content)
+
+        elif enhance_method_obj["name"] == self.option_list[3]:
+            image_content = self.enhance.apply_gaussian_subtract(image_content)
+
         reply_text = self.ocr.ocr(image_content)
 
         return reply_text

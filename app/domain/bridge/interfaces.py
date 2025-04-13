@@ -3,17 +3,17 @@ from typing import Optional
 
 class ConnectLine2DatabaseInterface(ABC):
     @abstractmethod
-    async def post_requests_users(self, id:str) -> Optional[dict]:
+    async def post_requests_users(self, id: str) -> Optional[dict]:
         pass
 
     # @abstractmethod
-    # def get_requests_all_users(self) -> str: # เอาเป็น get user by id แทน
+    # def get_requests_users_by_id(self) -> str:
     #     pass
 
-    # @abstractmethod
-    # def post_requests_command(self, id: int, user_id: str):
-    #     pass
+    @abstractmethod
+    def post_requests_command(self, user_id: str, name: str):
+        pass
     
-    # @abstractmethod
-    # def get_requests_all_command(self) -> str:
-    #     pass
+    @abstractmethod
+    def get_requests_command_by_user_id(self, user_id: str) -> str:
+        pass

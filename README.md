@@ -49,7 +49,15 @@ LINE_ACCESS_TOKEN=your_token
 
 ---
 
-### **6. การรันแอปพลิเคชัน**
+### **6. การรันฐานข้อมูล**
+
+```bash
+docker-compose up -d
+```
+
+---
+
+### **7. การรันแอปพลิเคชัน**
 
 ```bash
 uvicorn app.main:app --reload
