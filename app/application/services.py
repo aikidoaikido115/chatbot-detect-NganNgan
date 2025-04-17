@@ -103,10 +103,17 @@ class LineBotService(LineBotServiceInterface):
         print(f"response มาละ {response}")
 
         image_content = await self.messaging_adapter.get_image_content(image_id)
+
+
         # self.image_storage.save_image(user_id, image_content)
         # OCR
         # print(image_content)
+
+        
         enhance_method_obj = await self.bridge.get_requests_command_by_user_id(user_id)
+        # กำหนดค่า default
+        if enhance_method_obj == None:
+            enhance_method_obj = {"name":"conv_sharpen"}
 
         print(f"ได้มาจาก database {enhance_method_obj}")
         if enhance_method_obj["name"] == self.option_list[0]:
