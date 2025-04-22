@@ -24,7 +24,6 @@ from app.domain.AWS.interfaces import (
 )
 
 from util.flex import flex_select_enhance, flex_output
-from util.img2url import image_bytes_to_url
 from typing import Optional, List
 
 class UserService:
