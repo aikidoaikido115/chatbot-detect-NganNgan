@@ -19,7 +19,12 @@ from app.domain.bridge.interfaces import (
     ConnectLine2DatabaseInterface
 )
 
-from util.flex import flex_select_enhance
+from app.domain.AWS.interfaces import (
+    S3ImageUploaderInterface
+)
+
+from util.flex import flex_select_enhance, flex_output
+from util.img2url import image_bytes_to_url
 from typing import Optional, List
 
 class UserService:
@@ -72,13 +77,15 @@ class LineBotService(LineBotServiceInterface):
         image_storage: ImageStorageInterface,
         ocr: OcrInterface,
         enhance: ImageEnhanceInterface,
-        bridge: ConnectLine2DatabaseInterface
+        bridge: ConnectLine2DatabaseInterface,
+        aws_storage: S3ImageUploaderInterface
     ):
         self.messaging_adapter = messaging_adapter  # Inject Dependency
         self.image_storage = image_storage
         self.ocr = ocr
         self.enhance = enhance
         self.bridge = bridge
+        self.aws_storage = aws_storage
 
         self.option_list = ["conv_sharpen", "unsharp_mask", "laplacian_sharpen", "gaussian_subtract"]
 
@@ -130,6 +137,10 @@ class LineBotService(LineBotServiceInterface):
         elif enhance_method_obj["name"] == self.option_list[3]:
             image_content = self.enhance.apply_gaussian_subtract(image_content)
 
-        reply_text = self.ocr.ocr(image_content)
+        ocr_output = self.ocr.ocr(image_content)
+        license_plate, province, _ = ocr_output.split("\n")
 
-        return reply_text
+        image_url = await self.aws_storage.upload_image(image_content, folder="license_plate")
+
+        # test_url = "https://detectngannganurl.s3.amazonaws.com/profile_pictures/11dbf2b2-d8d6-4aab-8f25-d4af21b97a82.png"
+        return flex_output(image_url, license_plate, province)

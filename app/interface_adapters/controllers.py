@@ -15,6 +15,7 @@ from typing import List, Dict, Any
 
 # from app.domain.bridge.interfaces import ConnectLine2DatabaseInterface
 from app.infrastructure.bridge import ConnectLine2DatabaseAdapter
+from app.infrastructure.aws_storage import S3ImageUploaderAdapter
 
 router = APIRouter()
 
@@ -79,7 +80,15 @@ def get_line_bot_service() -> LineBotServiceInterface:
     ocr = OcrAdapter()
     enhance = ImageEnhanceAdapter()
     bridge = ConnectLine2DatabaseAdapter()
-    return LineBotService(messaging_adapter, image_storage, ocr, enhance, bridge)
+    aws_storage = S3ImageUploaderAdapter()
+    return LineBotService(
+        messaging_adapter,
+        image_storage,
+        ocr,
+        enhance,
+        bridge,
+        aws_storage
+    )
 
 @router.post("/webhook")
 async def line_webhook(

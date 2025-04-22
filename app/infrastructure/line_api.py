@@ -36,7 +36,7 @@ class LineMessagingAdapter(LineMessagingInterface):
             "replyToken": reply_token,
             "messages": [{
                 "type": "flex",
-                "altText": "เทคนิคอะไรดี?",
+                "altText": "แง้นๆๆ",
                 "contents": flex_message
             }]
         }
