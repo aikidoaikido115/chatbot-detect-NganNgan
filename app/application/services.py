@@ -137,7 +137,7 @@ class LineBotService(LineBotServiceInterface):
             image_content = self.enhance.apply_gaussian_subtract(image_content)
 
         ocr_output = self.ocr.ocr(image_content)
-        license_plate, province, _ = ocr_output.split("\n")
+        license_plate, province = ocr_output.split("\n")
 
         image_url = await self.aws_storage.upload_image(image_content, folder="license_plate")
 

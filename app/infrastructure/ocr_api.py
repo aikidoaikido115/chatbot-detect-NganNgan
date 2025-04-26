@@ -35,13 +35,11 @@ class OcrAdapter(OcrInterface):
                         "- The province name translated into English\n\n"
                         "Return the result as plain text only in this format:\n"
                         "<license plate number>\n"
-                        "<province in Thai>\n"
-                        "<province in English>\n\n"
+                        "<province in Thai>\n\n"
                         "If any part is unclear, make your best guess. Return only the most prominent license plate."
                         "If no license plate is found or the image is not related to a vehicle license plate, simply respond with:\n"
-                        "\"ไม่พบป้ายทะเบียน กรุณาอย่าส่งรูป x มามั่วๆ\"\n\n"
-                        "Where x means the type of image you see."
-                        
+                        "-1\n"
+                        "-1\n\n"
                     )
                 },
                 {
