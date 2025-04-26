@@ -7,170 +7,167 @@ def flex_select_enhance():
     "layout": "vertical",
     "contents": [
       {
-        "type": "text",
-        "text": "เลือกวิธี enhance รูป",
-        "align": "center",
-        "contents": []
-      },
-      {
-        "type": "button",
-        "action": {
-          "type": "message",
-          "label": "conv_sharpen",
-          "text": "conv_sharpen"
-        }
-      },
-      {
-        "type": "button",
-        "action": {
-          "type": "message",
-          "label": "unsharp_mask",
-          "text": "unsharp_mask"
-        }
-      },
-      {
-        "type": "button",
-        "action": {
-          "type": "message",
-          "label": "laplacian_sharpen",
-          "text": "laplacian_sharpen"
-        }
-      },
-      {
-        "type": "button",
-        "action": {
-          "type": "message",
-          "label": "gaussian_subtract",
-          "text": "gaussian_subtract"
-        }
-      }
-    ]
-  }
-}
-
-def flex_output(url, license_plate, province):
-    return {
-  "type": "bubble",
-  "hero": {
-    "type": "image",
-    "url": url,
-    "size": "full",
-    "aspectRatio": "20:13",
-    "aspectMode": "cover",
-    "action": {
-      "type": "uri",
-      "label": "Action",
-      "uri": url
-    }
-  },
-  "body": {
-    "type": "box",
-    "layout": "vertical",
-    "spacing": "md",
-    "action": {
-      "type": "uri",
-      "label": "Action",
-      "uri": "https://linecorp.com"
-    },
-    "contents": [
-      {
-        "type": "text",
-        "text": "ข้อมูลที่ตรวจพบ",
-        "weight": "bold",
-        "size": "xl",
-        "contents": []
-      },
-      {
         "type": "box",
         "layout": "vertical",
-        "spacing": "sm",
         "contents": [
           {
+            "type": "text",
+            "text": "เลือกวิธีการปรับปรุงรูปภาพ",
+            "weight": "bold",
+            "size": "lg",
+            "align": "center",
+            "gravity": "center",
+            "margin": "md",
+            "contents": []
+          },
+          {
+            "type": "separator",
+            "margin": "lg",
+            "color": "#B7B7B7FF"
+          },
+          {
             "type": "box",
-            "layout": "baseline",
+            "layout": "vertical",
+            "margin": "lg",
             "contents": [
               {
-                "type": "text",
-                "text": "ทะเบียน",
-                "weight": "bold",
-                "margin": "sm",
-                "contents": []
-              },
-              {
-                "type": "text",
-                "text": license_plate,
-                "size": "sm",
-                "color": "#AAAAAA",
-                "align": "end",
-                "contents": []
+                "type": "button",
+                "action": {
+                  "type": "message",
+                  "label": "conv_sharpen",
+                  "text": "conv_sharpen"
+                },
+                "color": "#1E90FF",
+                "gravity": "center"
               }
             ]
           },
           {
             "type": "box",
-            "layout": "baseline",
+            "layout": "vertical",
+            "margin": "lg",
             "contents": [
               {
-                "type": "text",
-                "text": "จังหวัด",
-                "weight": "bold",
-                "flex": 0,
-                "margin": "sm",
-                "contents": []
-              },
-              {
-                "type": "text",
-                "text": province,
-                "size": "sm",
-                "color": "#AAAAAA",
-                "align": "end",
-                "contents": []
+                "type": "button",
+                "action": {
+                  "type": "message",
+                  "label": "unsharp_mask",
+                  "text": "unsharp_mask"
+                },
+                "color": "#1E90FF",
+                "gravity": "center"
               }
             ]
           },
           {
             "type": "box",
-            "layout": "baseline",
+            "layout": "vertical",
+            "margin": "lg",
             "contents": [
               {
-                "type": "text",
-                "text": "สถานะ",
-                "weight": "bold",
-                "flex": 0,
-                "margin": "sm",
-                "contents": []
-              },
+                "type": "button",
+                "action": {
+                  "type": "message",
+                  "label": "laplacian_sharpen",
+                  "text": "laplacian_sharpen"
+                },
+                "color": "#1E90FF",
+                "gravity": "center"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "margin": "lg",
+            "contents": [
               {
-                "type": "text",
-                "text": "ผิดกฎจราจร",
-                "size": "sm",
-                "color": "#FF0000FF",
-                "align": "end",
-                "contents": []
+                "type": "button",
+                "action": {
+                  "type": "message",
+                  "label": "gaussian_subtract",
+                  "text": "gaussian_subtract"
+                },
+                "color": "#1E90FF",
+                "gravity": "center"
               }
             ]
           }
         ]
       }
     ]
+  }
+}
+
+def flex_output(url, license_plate, province, is_legal=False):
+    return {
+  "type": "bubble",
+  "hero": {
+    "type": "image",
+    "url": url,
+    "size": "full",
+    "aspectRatio": "1:1",
+    "aspectMode": "cover",
+    "action": {
+      "type": "uri",
+      "label": "Line",
+      "uri": url
+    }
   },
-  "footer": {
+  "body": {
     "type": "box",
     "layout": "vertical",
     "contents": [
       {
-        "type": "spacer",
-        "size": "xxl"
+        "type": "box",
+        "layout": "vertical",
+        "margin": "sm",
+        "contents": [
+          {
+            "type": "text",
+            "text": "ป้ายทะเบียนที่ตรวจพบ",
+            "weight": "regular",
+            "size": "md",
+            "gravity": "center",
+            "contents": []
+          },
+          {
+            "type": "text",
+            "text": f"{license_plate} {province}",
+            "weight": "bold",
+            "size": "xl",
+            "align": "center",
+            "gravity": "center",
+            "margin": "md",
+            "contents": []
+          }
+        ]
       },
       {
-        "type": "button",
-        "action": {
-          "type": "message",
-          "label": "ไปที่เมนู",
-          "text": "menu_select"
-        },
-        "color": "#448190FF",
-        "style": "primary"
+        "type": "box",
+        "layout": "vertical",
+        "margin": "sm",
+        "contents": [
+          {
+            "type": "text",
+            "text": "hello, world",
+            "align": "start",
+            "gravity": "center",
+            "margin": "sm",
+            "contents": [
+              {
+                "type": "span",
+                "text": "สถานะ : "
+              },
+              {
+                "type": "span",
+                "text": "ถูกกฎหมาย" if is_legal else "ผิดกฎหมาย",
+                "color": "#00D61CFF" if is_legal else "#FC0303",
+                "weight": "bold"
+              }
+            ]
+          }
+        ]
       }
     ]
   }
