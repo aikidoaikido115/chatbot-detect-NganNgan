@@ -3,7 +3,8 @@ from app.domain.line.interfaces import (
     LineMessagingInterface,
     ImageStorageInterface,
     OcrInterface,
-    ImageEnhanceInterface
+    ImageEnhanceInterface,
+    LegalInterface
 )
 from app.domain.database.interfaces import (
     UserRepositoryInterface,
@@ -24,6 +25,7 @@ from app.domain.AWS.interfaces import (
 )
 
 from util.flex import flex_select_enhance, flex_output
+from util.str_convert import str_to_bool
 from typing import Optional, List
 
 class UserService:
@@ -77,7 +79,8 @@ class LineBotService(LineBotServiceInterface):
         ocr: OcrInterface,
         enhance: ImageEnhanceInterface,
         bridge: ConnectLine2DatabaseInterface,
-        aws_storage: S3ImageUploaderInterface
+        aws_storage: S3ImageUploaderInterface,
+        legal: LegalInterface
     ):
         self.messaging_adapter = messaging_adapter  # Inject Dependency
         self.image_storage = image_storage
@@ -85,6 +88,7 @@ class LineBotService(LineBotServiceInterface):
         self.enhance = enhance
         self.bridge = bridge
         self.aws_storage = aws_storage
+        self.legal = legal
 
         self.option_list = ["conv_sharpen", "unsharp_mask", "laplacian_sharpen", "gaussian_subtract"]
 
@@ -136,10 +140,13 @@ class LineBotService(LineBotServiceInterface):
         elif enhance_method_obj["name"] == self.option_list[3]:
             image_content = self.enhance.apply_gaussian_subtract(image_content)
 
+        is_legal = self.legal.check_is_legal(image_content)
+        is_legal = str_to_bool(is_legal)
+
         ocr_output = self.ocr.ocr(image_content)
         license_plate, province = ocr_output.split("\n")
 
         image_url = await self.aws_storage.upload_image(image_content, folder="license_plate")
 
         # test_url = "https://detectngannganurl.s3.amazonaws.com/profile_pictures/11dbf2b2-d8d6-4aab-8f25-d4af21b97a82.png"
-        return flex_output(image_url, license_plate, province)
+        return flex_output(image_url, license_plate, province, is_legal)

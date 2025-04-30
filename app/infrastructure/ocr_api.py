@@ -4,6 +4,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 import imghdr
 import os
+from time import sleep
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -50,4 +51,5 @@ class OcrAdapter(OcrInterface):
 )
         model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
         response = model.invoke([message])
+        sleep(0.25)
         return str(response.content)

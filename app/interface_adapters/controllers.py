@@ -6,6 +6,7 @@ from app.infrastructure.line_api import LineMessagingAdapter
 from app.infrastructure.file_storage import ImageStorageAdapter
 from app.infrastructure.ocr_api import OcrAdapter
 from app.infrastructure.image_enhance import ImageEnhanceAdapter
+from app.infrastructure.legal_api import LegalAdapter
 
 from app.infrastructure.database.postgres import get_db
 from app.infrastructure.database.repositories import UserRepository, CommandRepository
@@ -81,13 +82,15 @@ def get_line_bot_service() -> LineBotServiceInterface:
     enhance = ImageEnhanceAdapter()
     bridge = ConnectLine2DatabaseAdapter()
     aws_storage = S3ImageUploaderAdapter()
+    legal = LegalAdapter()
     return LineBotService(
         messaging_adapter,
         image_storage,
         ocr,
         enhance,
         bridge,
-        aws_storage
+        aws_storage,
+        legal
     )
 
 @router.post("/webhook")

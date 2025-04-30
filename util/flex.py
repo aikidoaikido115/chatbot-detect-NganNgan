@@ -161,8 +161,8 @@ def flex_output(url, license_plate, province, is_legal=False):
               },
               {
                 "type": "span",
-                "text": "ถูกกฎหมาย" if is_legal else "ไม่มี" if license_plate == "-1" else "ผิดกฎหมาย",
-                "color": "#00D61CFF" if is_legal else "#1E90FF" if license_plate == "-1" else "#FC0303",
+                "text": "ถูกกฎหมาย" if is_legal else "ไม่มี" if is_legal == None else "ผิดกฎหมาย",
+                "color": "#00D61CFF" if is_legal else "#1E90FF" if is_legal == None else "#FC0303",
                 "weight": "bold"
               }
             ]

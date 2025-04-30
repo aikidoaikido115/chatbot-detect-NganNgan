@@ -10,6 +10,11 @@ class OcrInterface(ABC):
     def ocr(self, image_content: bytes) -> str:
         pass
 
+class LegalInterface(ABC):
+    @abstractmethod
+    def check_is_legal(self, image_content: bytes) -> str:
+        pass
+
 class ImageEnhanceInterface(ABC):
     @abstractmethod
     def apply_conv_sharpen(self, image_content: bytes) -> bytes:
