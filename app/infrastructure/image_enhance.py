@@ -6,6 +6,7 @@ import numpy as np
 
 class ImageEnhanceAdapter(ImageEnhanceInterface):
 
+    # high-pass convolution
     def apply_conv_sharpen(self, image_content: bytes) -> bytes:
 
         file_type = imghdr.what(None, h=image_content)

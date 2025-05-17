@@ -15,6 +15,24 @@ class LegalInterface(ABC):
     def check_is_legal(self, image_content: bytes) -> str:
         pass
 
+class MorphologicalInterface(ABC):
+    @abstractmethod
+    def morph_erosion(self, image_content: bytes, ksize: int, iterations: int) -> bytes:
+        pass
+
+    @abstractmethod
+    def morph_dilation(self, image_content: bytes, ksize: int, iterations: int) -> bytes:
+        pass
+
+    @abstractmethod
+    def morph_opening(self, image_content: bytes, ksize: int, iterations: int) -> bytes:
+        pass
+
+    @abstractmethod
+    def morph_closing(self, image_content: bytes, ksize: int, iterations: int) -> bytes:
+        pass
+    
+
 class ImageEnhanceInterface(ABC):
     @abstractmethod
     def apply_conv_sharpen(self, image_content: bytes) -> bytes:

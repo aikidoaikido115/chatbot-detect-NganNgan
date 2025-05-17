@@ -4,7 +4,8 @@ from app.domain.line.interfaces import (
     ImageStorageInterface,
     OcrInterface,
     ImageEnhanceInterface,
-    LegalInterface
+    LegalInterface,
+    MorphologicalInterface
 )
 from app.domain.database.interfaces import (
     UserRepositoryInterface,
@@ -22,6 +23,10 @@ from app.domain.bridge.interfaces import (
 
 from app.domain.AWS.interfaces import (
     S3ImageUploaderInterface
+)
+
+from app.domain.yolo_crop.interfaces import (
+    YoloCropInterface
 )
 
 from util.flex import flex_select_enhance, flex_output
@@ -80,7 +85,9 @@ class LineBotService(LineBotServiceInterface):
         enhance: ImageEnhanceInterface,
         bridge: ConnectLine2DatabaseInterface,
         aws_storage: S3ImageUploaderInterface,
-        legal: LegalInterface
+        legal: LegalInterface,
+        yolo_crop: YoloCropInterface,
+        morph: MorphologicalInterface
     ):
         self.messaging_adapter = messaging_adapter  # Inject Dependency
         self.image_storage = image_storage
@@ -89,6 +96,8 @@ class LineBotService(LineBotServiceInterface):
         self.bridge = bridge
         self.aws_storage = aws_storage
         self.legal = legal
+        self.yolo_crop = yolo_crop
+        self.morph = morph
 
         self.option_list = ["conv_sharpen", "unsharp_mask", "laplacian_sharpen", "gaussian_subtract"]
 
@@ -143,8 +152,37 @@ class LineBotService(LineBotServiceInterface):
         is_legal = self.legal.check_is_legal(image_content)
         is_legal = str_to_bool(is_legal)
 
-        ocr_output = self.ocr.ocr(image_content)
-        license_plate, province = ocr_output.split("\n")
+        print(f"image byte {image_content[0:30]}")
+        try:
+            annotated, plates = self.yolo_crop.crop(image_bytes=image_content)
+            print(plates[0][0:30])
+            with open('downloads/ยังไม่ มอฟี่.jpg', 'wb') as f:
+                f.write(plates[0])
+
+            # หาก crop สำเร็จ morphological ต่อ
+            plates[0] = self.morph.morph_opening(plates[0])
+
+        except Exception as e:
+            print("คร๊อบป้ายทะเบียนไม่ได้สาเหตุ\n1.Yolo หาไม่เจอ\n2.ไม่มีจริงๆ")
+
+            # หาก crop ไม่สำเร็จ ไม่ต้อง morphological
+            plates = [image_content] # เอารูปเดิมไปแทน
+            print(f"เกิดข้อผิดพลาด: {e}")
+        
+        
+        ocr_output = self.ocr.ocr(plates[0])
+        # ocr_output = self.ocr.ocr(image_content)
+
+        with open('downloads/มอฟี่.jpg', 'wb') as f:
+            f.write(plates[0])
+
+        try:
+            license_plate, province = ocr_output.split("\n")
+        except:
+            parts = ocr_output.split("\n")
+            print(f"list ของ ocr กรณี split เกิน {parts}")
+            license_plate = parts[0]
+            province = parts[1]
 
         image_url = await self.aws_storage.upload_image(image_content, folder="license_plate")
 

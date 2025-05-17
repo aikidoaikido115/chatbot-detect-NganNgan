@@ -15,7 +15,7 @@ class OcrAdapter(OcrInterface):
     def ocr(self, image_content: bytes) -> str:
         
         file_type = imghdr.what(None, h=image_content)
-        print(f"นี่คือ filetype {file_type}")
+        print(f"นี่คือ filetype ocr {file_type}")
 
         if not file_type:
             raise ValueError("Unsupported or corrupted image format")
@@ -32,8 +32,7 @@ class OcrAdapter(OcrInterface):
                         "such as blur, glare, tilt, or partial obstruction.\n\n"
                         "Please extract and return the following information from the image:\n"
                         "- The license plate number (e.g. 1กข 1234)\n"
-                        "- The province written on the plate (in Thai)\n"
-                        "- The province name translated into English\n\n"
+                        "- The province written on the plate (in Thai)\n\n"
                         "Return the result as plain text only in this format:\n"
                         "<license plate number>\n"
                         "<province in Thai>\n\n"

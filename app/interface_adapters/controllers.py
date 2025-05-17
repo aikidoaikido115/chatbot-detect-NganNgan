@@ -17,6 +17,8 @@ from typing import List, Dict, Any
 # from app.domain.bridge.interfaces import ConnectLine2DatabaseInterface
 from app.infrastructure.bridge import ConnectLine2DatabaseAdapter
 from app.infrastructure.aws_storage import S3ImageUploaderAdapter
+from app.infrastructure.yolo_crop.ai_license_plate import YoloCropAdapter
+from app.infrastructure.morphological import MorphologicalAdapter
 
 router = APIRouter()
 
@@ -83,6 +85,9 @@ def get_line_bot_service() -> LineBotServiceInterface:
     bridge = ConnectLine2DatabaseAdapter()
     aws_storage = S3ImageUploaderAdapter()
     legal = LegalAdapter()
+    yolo_crop = YoloCropAdapter()
+    morph = MorphologicalAdapter()
+    
     return LineBotService(
         messaging_adapter,
         image_storage,
@@ -90,7 +95,9 @@ def get_line_bot_service() -> LineBotServiceInterface:
         enhance,
         bridge,
         aws_storage,
-        legal
+        legal,
+        yolo_crop,
+        morph
     )
 
 @router.post("/webhook")
