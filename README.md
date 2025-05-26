@@ -1,6 +1,6 @@
 # สวัสดีครับสมาชิกชมรมทุกท่าน
 
-## Hexagonal Architecture: Line Chatbot YOLO + OCR + image enhance
+## Hexagonal Architecture: Line Chatbot YOLO + OCR + image enhance + morphological
 ---
 
 ### 1. **การ Clone โปรเจกต์**
